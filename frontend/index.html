@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Website</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <h1>Blog Website</h1>
+        <div id="auth">
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="login()">Login</button>
+            <button onclick="showRegister()">Register</button>
+        </div>
+        <div id="register" style="display:none;">
+            <input type="text" id="reg-username" placeholder="Username">
+            <input type="email" id="reg-email" placeholder="Email">
+            <input type="password" id="reg-password" placeholder="Password">
+            <input type="text" id="reg-fullname" placeholder="Full Name">
+            <button onclick="register()">Register</button>
+            <button onclick="hideRegister()">Cancel</button>
+        </div>
+        <div id="user-panel" style="display:none;">
+            <span id="welcome"></span>
+            <button onclick="logout()">Logout</button>
+            <button onclick="showCreatePost()">New Post</button>
+        </div>
+        <div id="create-post" style="display:none;">
+            <input type="text" id="post-title" placeholder="Title">
+            <textarea id="post-content" placeholder="Content"></textarea>
+            <button onclick="createPost()">Create</button>
+            <button onclick="hideCreatePost()">Cancel</button>
+        </div>
+        <div id="posts"></div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
