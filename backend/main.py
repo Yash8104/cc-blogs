@@ -7,11 +7,14 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from motor.motor_asyncio import AsyncIOMotorClient
 from datetime import datetime, timedelta
+from fastapi import FastAPI, Depends, HTTPException, status, Request
+from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
 import os
 from dotenv import load_dotenv, find_dotenv
-
 # Force load .env from backend directory
 import pathlib
+
 backend_env_path = pathlib.Path(__file__).parent / '.env'
 print('Loading .env from:', backend_env_path)
 load_dotenv(backend_env_path)
@@ -26,6 +29,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Serve static files (JS, CSS) from the frontend folder
+frontend_path = pathlib.Path(__file__).parent.parent / "frontend"
+app.mount("/static", StaticFiles(directory=frontend_path), name="static")
+
+@app.get("/", response_class=HTMLResponse)
+async def serve_index():
+    index_file = frontend_path / "index.html"
+    return FileResponse(index_file)
+
 
 MONGODB_URI = os.getenv("MONGODB_URI")
 SECRET_KEY = os.getenv("SECRET_KEY")
