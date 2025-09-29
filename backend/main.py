@@ -14,6 +14,7 @@ import os
 from dotenv import load_dotenv, find_dotenv
 # Force load .env from backend directory
 import pathlib
+from bson import ObjectId
 
 backend_env_path = pathlib.Path(__file__).parent / '.env'
 print('Loading .env from:', backend_env_path)
@@ -84,6 +85,8 @@ class BlogPost(BaseModel):
     author: str
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+    likes: int = 0
+    liked_by: list = []
 
 class BlogPostCreate(BaseModel):
     title: str
@@ -200,6 +203,8 @@ async def create_post(post: BlogPostCreate, user: UserInDB = Depends(get_current
     post_dict["author"] = user.username
     post_dict["created_at"] = datetime.utcnow()
     post_dict["updated_at"] = datetime.utcnow()
+    post_dict["likes"] = 0
+    post_dict["liked_by"] = []
     result = await db.posts.insert_one(post_dict)
     post_dict["id"] = str(result.inserted_id)
     return BlogPost(**post_dict)
@@ -253,3 +258,25 @@ async def get_comments(post_id: str):
     for c in comments:
         c["id"] = str(c["_id"])
     return [Comment(**c) for c in comments]
+
+@app.post("/posts/{post_id}/like")
+async def like_post(post_id: str, user: UserInDB = Depends(get_current_active_user)):
+    post = await db.posts.find_one({"_id": ObjectId(post_id)})
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    if "liked_by" not in post:
+        post["liked_by"] = []
+    if user.username in post["liked_by"]:
+        return {"detail": "Already liked"}
+    await db.posts.update_one({"_id": ObjectId(post_id)}, {"$inc": {"likes": 1}, "$push": {"liked_by": user.username}})
+    return {"detail": "Liked"}
+
+@app.post("/posts/{post_id}/unlike")
+async def unlike_post(post_id: str, user: UserInDB = Depends(get_current_active_user)):
+    post = await db.posts.find_one({"_id": ObjectId(post_id)})
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    if "liked_by" not in post or user.username not in post["liked_by"]:
+        return {"detail": "Not liked yet"}
+    await db.posts.update_one({"_id": ObjectId(post_id)}, {"$inc": {"likes": -1}, "$pull": {"liked_by": user.username}})
+    return {"detail": "Unliked"}

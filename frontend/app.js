@@ -1,6 +1,7 @@
 const API_URL = ''; // Change to your backend URL if needed
 let token = localStorage.getItem('token') || '';
 let currentUser = null;
+let allPosts = [];
 
 function showRegister() {
     document.getElementById('auth').style.display = 'none';
@@ -140,23 +141,60 @@ function loadComments(postId) {
     });
 }
 
+function likePost(postId) {
+    fetch(`${API_URL}/posts/${postId}/like`, {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token }
+    })
+    .then(() => loadPosts());
+}
+
+function unlikePost(postId) {
+    fetch(`${API_URL}/posts/${postId}/unlike`, {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token }
+    })
+    .then(() => loadPosts());
+}
+
+function searchPosts() {
+    const query = document.getElementById('search-input').value.toLowerCase();
+    const filtered = allPosts.filter(post =>
+        post.title.toLowerCase().includes(query) ||
+        post.content.toLowerCase().includes(query)
+    );
+    renderPosts(filtered);
+}
+
 function loadPosts() {
     fetch(API_URL + '/posts')
     .then(res => res.json())
     .then(posts => {
-        const postsDiv = document.getElementById('posts');
-        postsDiv.innerHTML = '';
-        posts.forEach(post => {
-            const div = document.createElement('div');
-            div.className = 'post';
-            div.innerHTML = `<div class='post-title'>${post.title}</div>
-                <div class='post-meta'>By ${post.author} | ${new Date(post.created_at).toLocaleString()}</div>
-                <div class='post-content'>${post.content}</div>
-                <div class='comments-section' id='comments-${post.id}'></div>
-                ${token ? `<div class='add-comment-row'><input id='comment-input-${post.id}' type='text' placeholder='Add a comment...'><button onclick='addComment("${post.id}")'>Post</button></div>` : ''}`;
-            postsDiv.appendChild(div);
-            loadComments(post.id);
-        });
+        allPosts = posts;
+        renderPosts(posts);
+    });
+}
+
+function renderPosts(posts) {
+    const postsDiv = document.getElementById('posts');
+    postsDiv.innerHTML = '';
+    posts.forEach(post => {
+        const liked = post.liked_by && currentUser && post.liked_by.includes(currentUser.username);
+        const likeIcon = liked
+            ? `<span title='Unlike' style='color:#e0245e;cursor:pointer;font-size:1.3em;' onclick='unlikePost("${post.id}")'>&#10084;&#65039;</span>`
+            : `<span title='Like' style='color:#bbb;cursor:pointer;font-size:1.3em;' onclick='likePost("${post.id}")'>&#9825;</span>`;
+        const likeCount = `<span style='margin-left:6px;color:#e0245e;font-weight:600;'>${post.likes || 0}</span>`;
+        const likeRow = token ? `<div class='like-row'>${likeIcon} ${likeCount}</div>` : `<div class='like-row' style='color:#e0245e;font-weight:600;'>❤️ ${post.likes || 0}</div>`;
+        const div = document.createElement('div');
+        div.className = 'post';
+        div.innerHTML = `<div class='post-title'>${post.title}</div>
+            <div class='post-meta'>By ${post.author} | ${new Date(post.created_at).toLocaleString()}</div>
+            ${likeRow}
+            <div class='post-content'>${post.content}</div>
+            <div class='comments-section' id='comments-${post.id}'></div>
+            ${token ? `<div class='add-comment-row'><input id='comment-input-${post.id}' type='text' placeholder='Add a comment...'><button onclick='addComment("${post.id}")'>Post</button></div>` : ''}`;
+        postsDiv.appendChild(div);
+        loadComments(post.id);
     });
 }
 window.onload = function() {

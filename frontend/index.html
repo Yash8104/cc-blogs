@@ -4,47 +4,162 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog Website</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,600,700&display=swap">
     <link rel="stylesheet" href="/static/style.css">
     <style>
-        body { background: #f6f8fa; font-family: 'Inter', Arial, sans-serif; }
-        #app { max-width: 800px; margin: 40px auto; background: #fff; padding: 32px 36px 36px 36px; border-radius: 16px; box-shadow: 0 4px 24px #0001; }
-        h1 { text-align: center; font-weight: 600; color: #222; letter-spacing: 1px; }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+            font-family: 'Inter', Arial, sans-serif;
+            margin: 0;
+        }
+        #app {
+            max-width: 900px;
+            margin: 48px auto 32px auto;
+            background: rgba(255,255,255,0.85);
+            padding: 40px 44px 44px 44px;
+            border-radius: 28px;
+            box-shadow: 0 8px 32px 0 rgba(31,38,135,0.18), 0 1.5px 8px #a18cd133;
+            backdrop-filter: blur(8px);
+        }
+        h1 {
+            text-align: center;
+            font-weight: 700;
+            color: #7f53ac;
+            letter-spacing: 1.5px;
+            margin-bottom: 22px;
+            text-shadow: 0 2px 8px #fbc2eb66;
+        }
         .input-row { display: flex; gap: 12px; }
-        input, textarea { width: 100%; margin: 8px 0; padding: 10px 12px; border-radius: 8px; border: 1px solid #d0d7de; font-size: 1em; background: #f9fafb; transition: border 0.2s; }
-        input:focus, textarea:focus { border: 1.5px solid #007bff; outline: none; background: #fff; }
-        button { margin: 5px 2px; padding: 10px 22px; border: none; border-radius: 8px; background: #007bff; color: #fff; font-weight: 600; font-size: 1em; cursor: pointer; transition: background 0.2s; }
-        button:hover { background: #0056b3; }
-        #user-panel { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
-        #welcome { font-weight: 600; color: #007bff; }
-        #posts { margin-top: 30px; }
-        .post { background: #f9f9f9; margin-bottom: 24px; padding: 22px 20px 16px 20px; border-radius: 12px; box-shadow: 0 2px 8px #0001; }
-        .post-title { font-size: 1.3em; font-weight: 600; color: #222; margin-bottom: 2px; }
-        .post-meta { color: #888; font-size: 0.95em; margin-bottom: 10px; }
-        .post-content { margin-bottom: 12px; color: #333; }
-        .comments-section { background: #f3f6fa; border-radius: 8px; padding: 12px 14px; margin-top: 10px; }
-        .comment { margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #e0e0e0; }
+        input, textarea {
+            width: 100%;
+            margin: 8px 0;
+            padding: 13px 16px;
+            border-radius: 12px;
+            border: 1.5px solid #e0c3fc;
+            font-size: 1em;
+            background: rgba(255,255,255,0.7);
+            transition: border 0.2s, box-shadow 0.2s;
+            box-shadow: 0 1.5px 8px #a18cd122;
+        }
+        input:focus, textarea:focus {
+            border: 2px solid #7f53ac;
+            outline: none;
+            background: #fff;
+        }
+        button {
+            margin: 5px 2px;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(90deg, #7f53ac 0%, #fbc2eb 100%);
+            color: #fff;
+            font-weight: 700;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+            box-shadow: 0 2px 12px #a18cd133;
+        }
+        button:hover {
+            background: linear-gradient(90deg, #fbc2eb 0%, #7f53ac 100%);
+            color: #7f53ac;
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 4px 24px #a18cd144;
+        }
+        #user-panel {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+        #welcome {
+            font-weight: 600;
+            color: #7f53ac;
+        }
+        #posts { margin-top: 32px; }
+        .post {
+            background: rgba(255,255,255,0.95);
+            margin-bottom: 32px;
+            padding: 30px 26px 20px 26px;
+            border-radius: 20px;
+            box-shadow: 0 4px 24px #a18cd122, 0 1.5px 8px #fbc2eb33;
+            border: 1.5px solid #e0c3fc;
+            position: relative;
+        }
+        .post-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #7f53ac;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+        .post-meta {
+            color: #b993d6;
+            font-size: 1em;
+            margin-bottom: 12px;
+            font-weight: 600;
+            text-shadow: 0 1px 2px #fbc2eb44;
+        }
+        .post-content {
+            margin-bottom: 14px;
+            color: #333;
+            font-size: 1.12em;
+        }
+        .comments-section {
+            background: #f8f6ff;
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin-top: 14px;
+            box-shadow: 0 1.5px 8px #a18cd111;
+        }
+        .comment {
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0c3fc;
+        }
         .comment:last-child { border-bottom: none; }
-        .comment-author { font-weight: 600; color: #007bff; margin-right: 6px; }
+        .comment-author {
+            font-weight: 700;
+            color: #7f53ac;
+            margin-right: 8px;
+        }
         .comment-content { color: #444; }
-        .add-comment-row { display: flex; gap: 8px; margin-top: 8px; }
+        .add-comment-row { display: flex; gap: 8px; margin-top: 12px; }
         .add-comment-row input { flex: 1; }
-        @media (max-width: 600px) {
-            #app { padding: 12px 2vw; }
+        .like-row { margin-bottom: 12px; }
+        .search-bar {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 28px;
+        }
+        .search-bar input {
+            max-width: 370px;
+            border-radius: 22px;
+            border: 2px solid #e0c3fc;
+            background: #fff;
+            font-size: 1.13em;
+            box-shadow: 0 1.5px 8px #a18cd122;
+        }
+        .search-bar input:focus { border: 2px solid #7f53ac; }
+        @media (max-width: 700px) {
+            #app { padding: 10px 2vw; }
             .post { padding: 12px 6px; }
         }
     </style>
 </head>
 <body>
     <div id="app">
-        <h1>📝 Modern Blog Website</h1>
+        <h1>✨ Aesthetic Blog Website</h1>
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Search posts by title or content..." oninput="searchPosts()">
+        </div>
         <div id="auth">
             <div class="input-row">
                 <input type="text" id="username" placeholder="Username">
                 <input type="password" id="password" placeholder="Password">
             </div>
             <button onclick="login()">Login</button>
-            <button onclick="showRegister()" style="background:#6c757d;">Register</button>
+            <button onclick="showRegister()" style="background:#b993d6;">Register</button>
         </div>
         <div id="register" style="display:none;">
             <div class="input-row">
@@ -56,20 +171,20 @@
                 <input type="text" id="reg-fullname" placeholder="Full Name">
             </div>
             <button onclick="register()">Register</button>
-            <button onclick="hideRegister()" style="background:#6c757d;">Cancel</button>
+            <button onclick="hideRegister()" style="background:#b993d6;">Cancel</button>
         </div>
         <div id="user-panel" style="display:none;">
             <span id="welcome"></span>
             <div>
                 <button onclick="showCreatePost()">New Post</button>
-                <button onclick="logout()" style="background:#dc3545;">Logout</button>
+                <button onclick="logout()" style="background:#e573c0;">Logout</button>
             </div>
         </div>
         <div id="create-post" style="display:none;">
             <input type="text" id="post-title" placeholder="Title">
             <textarea id="post-content" placeholder="Content" rows="4"></textarea>
             <button onclick="createPost()">Create</button>
-            <button onclick="hideCreatePost()" style="background:#6c757d;">Cancel</button>
+            <button onclick="hideCreatePost()" style="background:#b993d6;">Cancel</button>
         </div>
         <div id="posts"></div>
     </div>
