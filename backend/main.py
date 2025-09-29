@@ -89,6 +89,16 @@ class BlogPostCreate(BaseModel):
     title: str
     content: str
 
+class Comment(BaseModel):
+    id: Optional[str]
+    post_id: str
+    author: str
+    content: str
+    created_at: Optional[datetime] = None
+
+class CommentCreate(BaseModel):
+    content: str
+
 # Utility functions
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
@@ -224,3 +234,22 @@ async def delete_post(post_id: str, user: UserInDB = Depends(get_current_active_
         raise HTTPException(status_code=403, detail="Not enough permissions")
     await db.posts.delete_one({"_id": post_id})
     return {"detail": "Post deleted"}
+
+@app.post("/posts/{post_id}/comments", response_model=Comment)
+async def add_comment(post_id: str, comment: CommentCreate, user: UserInDB = Depends(get_current_active_user)):
+    comment_dict = {
+        "post_id": post_id,
+        "author": user.username,
+        "content": comment.content,
+        "created_at": datetime.utcnow()
+    }
+    result = await db.comments.insert_one(comment_dict)
+    comment_dict["id"] = str(result.inserted_id)
+    return Comment(**comment_dict)
+
+@app.get("/posts/{post_id}/comments", response_model=List[Comment])
+async def get_comments(post_id: str):
+    comments = await db.comments.find({"post_id": post_id}).sort("created_at", 1).to_list(100)
+    for c in comments:
+        c["id"] = str(c["_id"])
+    return [Comment(**c) for c in comments]

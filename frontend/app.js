@@ -1,5 +1,5 @@
 const API_URL = ''; // Change to your backend URL if needed
-let token = '';
+let token = localStorage.getItem('token') || '';
 let currentUser = null;
 
 function showRegister() {
@@ -28,6 +28,7 @@ function login() {
     .then(data => {
         if (data.access_token) {
             token = data.access_token;
+            localStorage.setItem('token', token);
             getCurrentUser();
         } else {
             alert('Login failed');
@@ -56,6 +57,7 @@ function register() {
 }
 function logout() {
     token = '';
+    localStorage.removeItem('token');
     currentUser = null;
     document.getElementById('user-panel').style.display = 'none';
     document.getElementById('auth').style.display = 'block';
@@ -100,6 +102,44 @@ function createPost() {
         }
     });
 }
+
+// Add comment to a post
+function addComment(postId) {
+    const input = document.getElementById(`comment-input-${postId}`);
+    const content = input.value.trim();
+    if (!content) return;
+    fetch(`${API_URL}/posts/${postId}/comments`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ content })
+    })
+    .then(res => res.json())
+    .then(comment => {
+        input.value = '';
+        loadComments(postId);
+    });
+}
+
+// Load comments for a post
+function loadComments(postId) {
+    fetch(`${API_URL}/posts/${postId}/comments`)
+    .then(res => res.json())
+    .then(comments => {
+        const commentsDiv = document.getElementById(`comments-${postId}`);
+        if (!commentsDiv) return;
+        commentsDiv.innerHTML = '';
+        comments.forEach(comment => {
+            const div = document.createElement('div');
+            div.className = 'comment';
+            div.innerHTML = `<span class='comment-author'>${comment.author}</span><span class='comment-content'>${comment.content}</span> <span style='color:#aaa;font-size:0.9em;'>${new Date(comment.created_at).toLocaleString()}</span>`;
+            commentsDiv.appendChild(div);
+        });
+    });
+}
+
 function loadPosts() {
     fetch(API_URL + '/posts')
     .then(res => res.json())
@@ -111,11 +151,19 @@ function loadPosts() {
             div.className = 'post';
             div.innerHTML = `<div class='post-title'>${post.title}</div>
                 <div class='post-meta'>By ${post.author} | ${new Date(post.created_at).toLocaleString()}</div>
-                <div>${post.content}</div>`;
+                <div class='post-content'>${post.content}</div>
+                <div class='comments-section' id='comments-${post.id}'></div>
+                ${token ? `<div class='add-comment-row'><input id='comment-input-${post.id}' type='text' placeholder='Add a comment...'><button onclick='addComment("${post.id}")'>Post</button></div>` : ''}`;
             postsDiv.appendChild(div);
+            loadComments(post.id);
         });
     });
 }
 window.onload = function() {
-    loadPosts();
+    token = localStorage.getItem('token') || '';
+    if (token) {
+        getCurrentUser();
+    } else {
+        loadPosts();
+    }
 };

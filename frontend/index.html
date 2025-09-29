@@ -4,35 +4,72 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blog Website</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap">
     <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body { background: #f6f8fa; font-family: 'Inter', Arial, sans-serif; }
+        #app { max-width: 800px; margin: 40px auto; background: #fff; padding: 32px 36px 36px 36px; border-radius: 16px; box-shadow: 0 4px 24px #0001; }
+        h1 { text-align: center; font-weight: 600; color: #222; letter-spacing: 1px; }
+        .input-row { display: flex; gap: 12px; }
+        input, textarea { width: 100%; margin: 8px 0; padding: 10px 12px; border-radius: 8px; border: 1px solid #d0d7de; font-size: 1em; background: #f9fafb; transition: border 0.2s; }
+        input:focus, textarea:focus { border: 1.5px solid #007bff; outline: none; background: #fff; }
+        button { margin: 5px 2px; padding: 10px 22px; border: none; border-radius: 8px; background: #007bff; color: #fff; font-weight: 600; font-size: 1em; cursor: pointer; transition: background 0.2s; }
+        button:hover { background: #0056b3; }
+        #user-panel { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+        #welcome { font-weight: 600; color: #007bff; }
+        #posts { margin-top: 30px; }
+        .post { background: #f9f9f9; margin-bottom: 24px; padding: 22px 20px 16px 20px; border-radius: 12px; box-shadow: 0 2px 8px #0001; }
+        .post-title { font-size: 1.3em; font-weight: 600; color: #222; margin-bottom: 2px; }
+        .post-meta { color: #888; font-size: 0.95em; margin-bottom: 10px; }
+        .post-content { margin-bottom: 12px; color: #333; }
+        .comments-section { background: #f3f6fa; border-radius: 8px; padding: 12px 14px; margin-top: 10px; }
+        .comment { margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #e0e0e0; }
+        .comment:last-child { border-bottom: none; }
+        .comment-author { font-weight: 600; color: #007bff; margin-right: 6px; }
+        .comment-content { color: #444; }
+        .add-comment-row { display: flex; gap: 8px; margin-top: 8px; }
+        .add-comment-row input { flex: 1; }
+        @media (max-width: 600px) {
+            #app { padding: 12px 2vw; }
+            .post { padding: 12px 6px; }
+        }
+    </style>
 </head>
 <body>
     <div id="app">
-        <h1>Blog Website</h1>
+        <h1>📝 Modern Blog Website</h1>
         <div id="auth">
-            <input type="text" id="username" placeholder="Username">
-            <input type="password" id="password" placeholder="Password">
+            <div class="input-row">
+                <input type="text" id="username" placeholder="Username">
+                <input type="password" id="password" placeholder="Password">
+            </div>
             <button onclick="login()">Login</button>
-            <button onclick="showRegister()">Register</button>
+            <button onclick="showRegister()" style="background:#6c757d;">Register</button>
         </div>
         <div id="register" style="display:none;">
-            <input type="text" id="reg-username" placeholder="Username">
-            <input type="email" id="reg-email" placeholder="Email">
-            <input type="password" id="reg-password" placeholder="Password">
-            <input type="text" id="reg-fullname" placeholder="Full Name">
+            <div class="input-row">
+                <input type="text" id="reg-username" placeholder="Username">
+                <input type="email" id="reg-email" placeholder="Email">
+            </div>
+            <div class="input-row">
+                <input type="password" id="reg-password" placeholder="Password">
+                <input type="text" id="reg-fullname" placeholder="Full Name">
+            </div>
             <button onclick="register()">Register</button>
-            <button onclick="hideRegister()">Cancel</button>
+            <button onclick="hideRegister()" style="background:#6c757d;">Cancel</button>
         </div>
         <div id="user-panel" style="display:none;">
             <span id="welcome"></span>
-            <button onclick="logout()">Logout</button>
-            <button onclick="showCreatePost()">New Post</button>
+            <div>
+                <button onclick="showCreatePost()">New Post</button>
+                <button onclick="logout()" style="background:#dc3545;">Logout</button>
+            </div>
         </div>
         <div id="create-post" style="display:none;">
             <input type="text" id="post-title" placeholder="Title">
-            <textarea id="post-content" placeholder="Content"></textarea>
+            <textarea id="post-content" placeholder="Content" rows="4"></textarea>
             <button onclick="createPost()">Create</button>
-            <button onclick="hideCreatePost()">Cancel</button>
+            <button onclick="hideCreatePost()" style="background:#6c757d;">Cancel</button>
         </div>
         <div id="posts"></div>
     </div>
